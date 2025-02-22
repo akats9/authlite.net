@@ -18,15 +18,33 @@ public class User {
             using (var connection = new SqliteConnection("Data Source=Data/auth.db")) {
                 connection.Open();
 
-                var email = value;
-
                 var command = connection.CreateCommand();
                 command.CommandText = @"INSERT INTO Users (Email) VALUES ('$email');";
                 command.Parameters.AddWithValue("$email", value);
             }  
         }
     }
-    public string Username { get; set; }
+    public string Username { 
+        get {
+            using (var connection = new SqliteConnection("Data Source=Data/auth.db")) {
+                var command = connection.CreateCommand();
+                
+                connection.Open();
+                using (var reader = command.ExecuteReader()) {
+                    return reader.GetString(1);
+                }
+            }
+        }
+        set {
+            using (var connection = new SqliteConnection("Data Source=Data/auth.db")) {
+                connection.Open();
+
+                var command = connection.CreateCommand();
+                command.CommandText = @"INSERT INTO Users (Username) VALUES ('username');";
+                command.Parameters.AddWithValue("username", value);
+            }  
+        } 
+    }
     public string Password { get; set; }
     public string Id { get; set; }
     public bool Confirmed { get; set; }
