@@ -1,7 +1,8 @@
 namespace authlite.net;
 
 public enum role {
-    User,
+    Employee,
     Manager,
     Admin,
+    None,
 }
