@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Data.Sqlite;
 
 namespace authlite.net;
@@ -35,7 +37,30 @@ public class UserManager {
             var usename = reader.GetString(1);
             var password = reader.GetString(2);
             var id = reader.GetString(3);
-            var role = reader.GetString(4);
+            var role = reader.GetString(4) switch {
+                "Admin" => net.role.Admin,
+                "Manager" => net.role.Manager,
+                "Employee" => net.role.Employee,
+                _ => net.role.None
+            };
+            new User(email, usename, password, id, role);
+        }
+    }
+
+    public void assingRole(User user, role role) {
+        user.Role = role;
+    }
+
+    public bool doesPasswordMatch(User user, string inputPass) {
+        using var hasher = SHA256.Create();
+        byte[] valueToBytes = Encoding.ASCII.GetBytes(inputPass);
+        byte[] passwordHashValue = hasher.ComputeHash(valueToBytes);
+        var hashString = Encoding.ASCII.GetString(passwordHashValue);
+        if (hashString == user.Password) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 }
